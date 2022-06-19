@@ -5,6 +5,16 @@
 
 using namespace Rampage;
 
+size_t Utils::ran_int(size_t max, size_t min)
+{
+	return min + (std::rand() % (max - min + 1));
+}
+
+int Utils::ran_int(int max, int min)
+{
+	return min + (std::rand() % (max - min + 1));
+}
+
 bool is_busy() {
 	return Globals::RampageData::rampage_active ||
 		PLAYER::GET_PLAYER_WANTED_LEVEL(0) > 0 ||

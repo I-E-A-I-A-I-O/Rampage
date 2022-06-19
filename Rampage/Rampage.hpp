@@ -1,10 +1,20 @@
 #pragma once
 
+#include "natives.h"
+#include "enums.h"
+#include "Globals.hpp"
+#include "ScreenUtils.hpp"
+#include "Utils.hpp"
+#include <vector>
+
 namespace Rampage {
 	typedef struct {
-		int remaining_time;
+		int start_time;
 		int kills;
 		int vehicle_kills;
+		int headshot_count;
+		int last_v_spawn;
+		int last_p_spawn;
 		bool melee_enabled;
 		bool pistol_enabled;
 		bool rifle_enabled;
@@ -16,6 +26,8 @@ namespace Rampage {
 		bool vehicle_only;
 		bool weak_enemies;
 		bool rc_only;
+		bool headshot_only;
+		bool ability_disabled;
 		bool extra_kills;
 		bool extra_headshots;
 		bool extra_vehicles;
@@ -24,5 +36,6 @@ namespace Rampage {
 	} CurrentRampageData;
 
 	void start_rampage();
+	void process_rampage();
 	void end_rampage();
 }
