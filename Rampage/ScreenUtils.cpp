@@ -3,6 +3,87 @@
 
 using namespace Rampage;
 
+struct Position
+{
+	float x;
+	float y;
+
+	Position(float x, float y)
+	{
+		this->x = x;
+		this->y = y;
+	}
+};
+
+std::unordered_map<int, Position> badge_slots = {
+	{0, Position(0.91f, 0.97f)},
+	{1, Position(0.91f, 0.918f)}
+};
+
+std::unordered_map<int, Position> content_slots =
+{
+	{0, Position(0.75f, 0.952f)},
+	{1, Position(0.75f, 0.90f)}
+};
+
+std::unordered_map<int, Position> title_slots =
+{
+	{0, Position(0.855f, 0.96f)},
+	{1, Position(0.855f, 0.91f)}
+};
+
+void draw_sprite(float x, float y, bool red)
+{
+	if (!GRAPHICS::HAS_STREAMED_TEXTURE_DICT_LOADED("timerbars"))
+		UI::load_sprites();
+
+	GRAPHICS::DRAW_SPRITE("timerbars", "all_black_bg", x, y, 0.15f, 0.045f, 0, 0, 0, 0, 150, 0, 0);
+
+	if (red)
+		GRAPHICS::DRAW_SPRITE("timerbars", "all_red_bg", x, y, 0.15f, 0.045f, 0, 165, 15, 1, 150, 0, 0);
+}
+
+void draw_sprite_text(float x, float y, float scale, const char* text, bool right)
+{
+	HUD::BEGIN_TEXT_COMMAND_DISPLAY_TEXT("STRING");
+	HUD::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(text);
+	if (right)
+	{
+		HUD::SET_TEXT_WRAP(0.6f, 0.975f);
+		HUD::SET_TEXT_JUSTIFICATION(2);
+	}
+	HUD::SET_TEXT_SCALE(1.0f, scale);
+	HUD::END_TEXT_COMMAND_DISPLAY_TEXT(x, y, 0);
+}
+
+void UI::draw_badge(std::string title, std::string content, bool red, int slot)
+{
+	if (red) {
+		title = std::string("~r~").append(title);
+		content = std::string("~r~").append(content);
+	}
+
+	Position bPos = badge_slots.at(slot);
+	Position cPos = content_slots.at(slot);
+	Position tPos = title_slots.at(slot);
+	draw_sprite(bPos.x, bPos.y, red);
+	draw_sprite_text(cPos.x, cPos.y, 0.42f, content.c_str(), true);
+	draw_sprite_text(tPos.x, tPos.y, 0.295f, title.c_str(), false);
+}
+
+void UI::load_sprites()
+{
+	GRAPHICS::REQUEST_STREAMED_TEXTURE_DICT("timerbars", false);
+
+	while (!GRAPHICS::HAS_STREAMED_TEXTURE_DICT_LOADED("timerbars"))
+		WAIT(1);
+}
+
+void UI::free_sprites()
+{
+	GRAPHICS::SET_STREAMED_TEXTURE_DICT_AS_NO_LONGER_NEEDED("timerbars");
+}
+
 void UI::show_help_text(const char* text, bool beep) {
 	HUD::BEGIN_TEXT_COMMAND_DISPLAY_HELP("STRING");
 	HUD::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(text);

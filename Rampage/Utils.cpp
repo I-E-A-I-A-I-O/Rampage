@@ -3,6 +3,30 @@
 
 using namespace Rampage;
 
+
+
+std::string Utils::format_duration(std::chrono::milliseconds ms) {
+	using namespace std::chrono;
+	auto secs = duration_cast<seconds>(ms);
+	ms -= duration_cast<milliseconds>(secs);
+	auto mins = duration_cast<minutes>(secs);
+	secs -= duration_cast<seconds>(mins);
+
+	std::stringstream ss;
+
+	if (mins.count() < 10)
+		ss << "0";
+
+	ss << mins.count() << ":";
+
+	if (secs.count() < 10)
+		ss << "0";
+
+	ss << secs.count();
+
+	return ss.str();
+}
+
 size_t Utils::ran_int(size_t max, size_t min)
 {
 	return min + (std::rand() % (max - min + 1));

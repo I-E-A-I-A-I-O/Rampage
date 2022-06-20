@@ -27,6 +27,9 @@ void read_rampages_file() {
 		mission.location.x = location_x;
 		mission.location.y = location_y;
 		mission.location.z = location_z;
+		mission.target = obj.at("target");
+		mission.multiplier = obj.at("multiplier");
+		mission.time = obj.at("time");
 		mission.extra_target_1 = obj.at("extra_target_1");
 		mission.extra_target_2 = obj.at("extra_target_2");
 		mission.extra_target_3 = obj.at("extra_target_3");
@@ -91,9 +94,9 @@ void read_rampages_file() {
 				}
 
 				if (i == 0)
-					mission.mission_flags = extras.at(i);
+					mission.mission_flags = flags.at(i);
 				else
-					mission.mission_flags = mission.mission_flags << extras.at(i);
+					mission.mission_flags = mission.mission_flags << flags.at(i);
 			}
 		}
 

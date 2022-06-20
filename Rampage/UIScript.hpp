@@ -1,6 +1,8 @@
 #pragma once
 #include "Globals.hpp"
 #include "ScaleformUtils.hpp"
+#include "ScreenUtils.hpp"
+#include "Utils.hpp"
 #include "natives.h"
 
 namespace Rampage {

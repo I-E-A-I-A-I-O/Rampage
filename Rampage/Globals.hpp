@@ -16,6 +16,8 @@ namespace Rampage {
 			static bool clean;
 			static ScaleformTypes scaleform_type;
 			static std::map<std::string, ScaleformObjective> extraObjectives;
+			static int time_left;
+			static int kill_count;
 		};
 
 		struct RampageData {

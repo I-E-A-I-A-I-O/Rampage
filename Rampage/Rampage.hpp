@@ -37,5 +37,5 @@ namespace Rampage {
 
 	void start_rampage();
 	void process_rampage();
-	void end_rampage(bool showScaleform);
+	void end_rampage(bool show_scaleform);
 }

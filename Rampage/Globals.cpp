@@ -5,6 +5,8 @@ using namespace Rampage;
 
 bool Globals::UIFlags::scaleform_active;
 bool Globals::UIFlags::clean;
+int Globals::UIFlags::time_left;
+int Globals::UIFlags::kill_count;
 std::map<std::string, Globals::ScaleformObjective> Globals::UIFlags::extraObjectives;
 ScaleformTypes Globals::UIFlags::scaleform_type;
 std::vector<Mission::MissionData> Globals::mission_data;

@@ -2,6 +2,7 @@
 
 #include "natives.h"
 #include "enums.h"
+#include <unordered_map>
 
 namespace Rampage {
 	namespace UI {
@@ -15,5 +16,8 @@ namespace Rampage {
 		void create_blip_for_enemy(Ped ped, int sprite, const char* name);
 		void create_blip_for_enemy_vehicle(Vehicle vehicle);
 		void delete_entity_blip(Entity entity);
+		void load_sprites();
+		void free_sprites();
+		void draw_badge(std::string title, std::string content, bool red, int slot);
 	}
 }
