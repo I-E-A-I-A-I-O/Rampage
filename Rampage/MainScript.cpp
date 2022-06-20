@@ -3,7 +3,31 @@
 
 using namespace Rampage;
 
-std::vector<Blip> mission_blips = {};
+void create_blips() {
+	for (auto& mission : Globals::mission_data)
+		mission.blip = UI::create_blip(mission.location.x, mission.location.y, mission.location.z, eBlipSprite::BlipSpriteRampage, eBlipColor::BlipColorRed, mission.name.c_str());
+}
+
+void rampage_blip_watch() {
+	for (auto& mission : Globals::mission_data) {
+		if (Globals::RampageData::rampage_active)
+			continue;
+
+		if (mission.blip == 0 && MISC::GET_GAME_TIMER() - mission.last_played > 300000) {
+			mission.blip = UI::create_blip(mission.location.x, mission.location.y, mission.location.z, eBlipSprite::BlipSpriteRampage, eBlipColor::BlipColorRed, mission.name.c_str());
+		}
+	}
+}
+
+void delete_blips() {
+	for (auto& mission : Globals::mission_data) {
+		if (mission.blip != 0 && HUD::DOES_BLIP_EXIST(mission.blip)) {
+			HUD::REMOVE_BLIP(&mission.blip);
+			mission.blip = 0;
+		}
+			
+	}
+}
 
 void read_rampages_file() {
 	nlohmann::json j;
@@ -127,11 +151,11 @@ void read_rampages_file() {
 
 void main() {
 	read_rampages_file();
-
-	for (const auto& mission : Globals::mission_data)
-		mission_blips.push_back(UI::create_blip(mission.location.x, mission.location.y, mission.location.z, eBlipSprite::BlipSpriteRampage, eBlipColor::BlipColorRed, mission.name.c_str()));
+	create_blips();
 
 	for (;;) {
+		rampage_blip_watch();
+
 		if (!Globals::RampageData::rampage_active) {
 			Hash rampage_hash = Utils::is_player_in_start_range();
 
@@ -140,6 +164,7 @@ void main() {
 
 				if (PAD::IS_CONTROL_JUST_PRESSED(0, 51))
 				{
+					delete_blips();
 					Globals::UIFlags::scaleform_type = ScaleformTypes::RampageStarted;
 
 					if (Globals::UIFlags::scaleform_active)
@@ -147,6 +172,7 @@ void main() {
 					else
 						Globals::UIFlags::scaleform_active = true;
 
+					TASK::TASK_PLAY_ANIM(PLAYER::PLAYER_PED_ID(), "missrampageintrooutro", "trvram_6_1h_intro", 8, -8, -1, 1, 0, 0, 0, 0);
 					GRAPHICS::ANIMPOSTFX_PLAY("Rampage", 0, TRUE);
 					AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_5_START");
 					AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_5_OS");
@@ -163,8 +189,15 @@ void main() {
 				}
 			}
 		}
-		else
-			process_rampage();
+		else if (!process_rampage()) {
+			for (auto& mission : Globals::mission_data) {
+				if (mission.mission_hash != Globals::RampageData::current_mission.mission_hash)
+					continue;
+
+				mission.last_played = MISC::GET_GAME_TIMER();
+			}
+		}
+			
 
 		WAIT(0);
 	}
@@ -176,12 +209,7 @@ void Rampage::on_start() {
 }
 
 void Rampage::on_abort() {
-	for (auto blip : mission_blips) {
-		if (HUD::DOES_BLIP_EXIST(blip))
-			HUD::REMOVE_BLIP(&blip);
-	}
-
-	mission_blips.clear();
+	delete_blips();
 
 	if (Globals::RampageData::rampage_active)
 		end_rampage(false);

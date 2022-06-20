@@ -127,17 +127,9 @@ Blip UI::create_blip(float x, float y, float z, int sprite, eBlipColor color, co
 void UI::create_blip_for_enemy(Ped ped) {
 	Blip blipHandle = HUD::ADD_BLIP_FOR_ENTITY(ped);
 	HUD::SET_BLIP_SCALE(blipHandle, 0.7f);
-	HUD::SET_BLIP_SPRITE(blipHandle, eBlipSprite::BlipSpriteEnemy);
+	//HUD::SET_BLIP_SPRITE(blipHandle, eBlipSprite::BlipSpriteEnemy);
 	HUD::SET_BLIP_COLOUR(blipHandle, eBlipColor::BlipColorRed);
 	set_blip_name(blipHandle, "Enemy");
-}
-
-void UI::create_blip_for_enemy(Ped ped, int sprite, const char* name) {
-	Blip blipHandle = HUD::ADD_BLIP_FOR_ENTITY(ped);
-	HUD::SET_BLIP_SPRITE(blipHandle, sprite);
-	HUD::SET_BLIP_SCALE(blipHandle, 0.8f);
-	HUD::SET_BLIP_COLOUR(blipHandle, eBlipColor::BlipColorRed);
-	set_blip_name(blipHandle, name);
 }
 
 void UI::create_blip_for_enemy_vehicle(Vehicle vehicle) {

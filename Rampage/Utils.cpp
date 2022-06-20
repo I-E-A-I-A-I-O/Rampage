@@ -50,7 +50,7 @@ bool start_in_vehicle(const Mission::MissionData& mission) {
 		return !PED::IS_PED_IN_ANY_VEHICLE(PLAYER::PLAYER_PED_ID(), 0);
 }
 
-bool is_in_range(const Vector3& a, const Vector3& b, const float& range)
+bool Utils::is_in_range(const Vector3& a, const Vector3& b, const float& range)
 {
 	Vector3 dif = Vector3();
 	dif.x = a.x - b.x;
@@ -66,8 +66,14 @@ Hash Utils::is_player_in_start_range() {
 	Vector3 player_coords = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), 0);
 
 	for (const auto& mission : Globals::mission_data) {
-		if (is_in_range(player_coords, mission.location, 10) && start_in_vehicle(mission))
-			return mission.mission_hash;
+		if (mission.last_played > 0)
+		{
+			if (MISC::GET_GAME_TIMER() - mission.last_played > 300000)
+				if (is_in_range(player_coords, mission.location, 10) && start_in_vehicle(mission))
+					return mission.mission_hash;
+		}
+		else if (is_in_range(player_coords, mission.location, 10) && start_in_vehicle(mission))
+				return mission.mission_hash;
 	}
 
 	return 0;

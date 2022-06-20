@@ -22,6 +22,8 @@ namespace Rampage {
 			int extra_target_1;
 			int extra_target_2;
 			int extra_target_3;
+			int last_played;
+			Blip blip;
 			std::vector<Hash> ped_models;
 			std::vector<Hash> vehicle_models;
 			std::vector<Vector3> ped_spawnpoints;

@@ -26,7 +26,7 @@ void UI::set_scaleform_title_description(int scaleform_handle, const char* title
 void UI::set_total(int scaleform_handle, int type, float percentage, const char* title) {
 	GRAPHICS::BEGIN_SCALEFORM_MOVIE_METHOD(scaleform_handle, "SET_TOTAL");
 	GRAPHICS::SCALEFORM_MOVIE_METHOD_ADD_PARAM_INT(type);
-	GRAPHICS::SCALEFORM_MOVIE_METHOD_ADD_PARAM_FLOAT(percentage * 100.0f);
+	GRAPHICS::SCALEFORM_MOVIE_METHOD_ADD_PARAM_INT(percentage * 100.0f);
 	GRAPHICS::BEGIN_TEXT_COMMAND_SCALEFORM_STRING("STRING");
 	HUD::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(title);
 	GRAPHICS::END_TEXT_COMMAND_SCALEFORM_STRING();
