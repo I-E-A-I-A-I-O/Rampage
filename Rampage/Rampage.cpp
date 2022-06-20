@@ -253,7 +253,7 @@ void Rampage::process_rampage() {
 		if (crd.enemy_peds.size() < 10 && MISC::GET_GAME_TIMER() - crd.last_p_spawn > 1000) {
 			size_t index = Utils::ran_int(Globals::RampageData::current_mission.ped_spawnpoints.size() - 1, (size_t)0);
 			Vector3 coords = Globals::RampageData::current_mission.ped_spawnpoints.at(index);
-			size_t index = Utils::ran_int(Globals::RampageData::current_mission.ped_models.size() - 1, (size_t)0);
+			index = Utils::ran_int(Globals::RampageData::current_mission.ped_models.size() - 1, (size_t)0);
 			Hash model = Globals::RampageData::current_mission.ped_models.at(index);
 			Ped enemy = PED::CREATE_PED(0, model, coords, 0.0f, FALSE, FALSE);
 			PED::SET_PED_RELATIONSHIP_GROUP_HASH(enemy, Globals::RampageData::current_mission.relationship_group);
