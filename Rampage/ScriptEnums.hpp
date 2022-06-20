@@ -29,6 +29,7 @@ namespace Rampage {
 		SHOTGUN_ONLY,
 		MACHINEGUN_ONLY,
 		RC,
-		DRIVE_BY
+		DRIVE_BY,
+		NO_FOOT_ENEMIES
 	};
 }

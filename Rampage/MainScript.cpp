@@ -39,6 +39,14 @@ void read_rampages_file() {
 	for (auto& item : j.items()) {
 		nlohmann::json obj = item.value();
 		Mission::MissionData mission = Mission::MissionData();
+		mission.melee_override = 0;
+		mission.pistol_override = 0;
+		mission.shotgun_override = 0;
+		mission.machinegun_override = 0;
+		mission.rifle_override = 0;
+		mission.heavy_override = 0;
+		mission.sniper_override = 0;
+		mission.explosive_override = 0;
 		std::string str_key = obj.at("mission_hash");
 		mission.mission_hash = MISC::GET_HASH_KEY(str_key.c_str());
 		mission.name = obj.at("name");
@@ -143,6 +151,46 @@ void read_rampages_file() {
 			vec.y = coordsObj.at("y");
 			vec.z = coordsObj.at("z");
 			mission.vehicle_spawnpoints.push_back(vec);
+		}
+
+		if (obj.find("melee_override") != obj.end()) {
+			std::string weapon_name = obj.at("melee_override");
+			mission.melee_override = MISC::GET_HASH_KEY(weapon_name.c_str());
+		}
+
+		if (obj.find("pistol_override") != obj.end()) {
+			std::string weapon_name = obj.at("pistol_override");
+			mission.pistol_override = MISC::GET_HASH_KEY(weapon_name.c_str());
+		}
+
+		if (obj.find("machinegun_override") != obj.end()) {
+			std::string weapon_name = obj.at("machinegun_override");
+			mission.machinegun_override = MISC::GET_HASH_KEY(weapon_name.c_str());
+		}
+
+		if (obj.find("shotgun_override") != obj.end()) {
+			std::string weapon_name = obj.at("shotgun_override");
+			mission.shotgun_override = MISC::GET_HASH_KEY(weapon_name.c_str());
+		}
+
+		if (obj.find("rifle_override") != obj.end()) {
+			std::string weapon_name = obj.at("rifle_override");
+			mission.rifle_override = MISC::GET_HASH_KEY(weapon_name.c_str());
+		}
+
+		if (obj.find("sniper_override") != obj.end()) {
+			std::string weapon_name = obj.at("sniper_override");
+			mission.sniper_override = MISC::GET_HASH_KEY(weapon_name.c_str());
+		}
+
+		if (obj.find("heavy_override") != obj.end()) {
+			std::string weapon_name = obj.at("heavy_override");
+			mission.heavy_override = MISC::GET_HASH_KEY(weapon_name.c_str());
+		}
+
+		if (obj.find("explosive_override") != obj.end()) {
+			std::string weapon_name = obj.at("explosive_override");
+			mission.explosive_override = MISC::GET_HASH_KEY(weapon_name.c_str());
 		}
 
 		Globals::mission_data.push_back(mission);

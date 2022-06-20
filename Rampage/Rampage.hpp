@@ -31,6 +31,7 @@ namespace Rampage {
 		bool extra_kills;
 		bool extra_headshots;
 		bool extra_vehicles;
+		bool only_enemy_vehicles;
 		std::vector<Ped> enemy_peds;
 		std::vector<Vehicle> enemy_vehicles;
 	} CurrentRampageData;

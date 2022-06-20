@@ -5,6 +5,7 @@ using namespace Rampage;
 
 CurrentRampageData crd;
 int checkpoint = 10000;
+int vehicle_delay = 20000;
 
 void Rampage::start_rampage() {
 	AUDIO::REQUEST_SCRIPT_AUDIO_BANK("SCRIPT\\RAMPAGE_01", FALSE, -1);
@@ -162,6 +163,34 @@ void Rampage::start_rampage() {
 		crd.shotgun_enabled = true;
 		break;
 	}
+	case 8 << 13:
+	{
+		crd.ability_disabled = true;
+		crd.machinegun_enabled = true;
+		crd.vehicle_only = true;
+		crd.weak_enemies = true;
+		break;
+	}
+	case 13: 
+	{
+		crd.machinegun_enabled = true;
+		crd.vehicle_only = true;
+		crd.weak_enemies = true;
+		break;
+	}
+	case 8 << 14:
+	{
+		crd.heavy_enabled = true;
+		crd.ability_disabled = true;
+		crd.only_enemy_vehicles = true;
+		break;
+	}
+	case 14:
+	{
+		crd.only_enemy_vehicles = true;
+		crd.heavy_enabled = true;
+		break;
+	}
 	default: 
 	{
 		crd.shotgun_enabled = true;
@@ -171,43 +200,83 @@ void Rampage::start_rampage() {
 	}
 
 	if (crd.explosives_enabled) {
-		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, eWeapon::WeaponStickyBomb, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, eWeapon::WeaponStickyBomb, 10, TRUE, TRUE);
+		Hash weapon = eWeapon::WeaponStickyBomb;
+
+		if (Globals::RampageData::current_mission.explosive_override != 0)
+			weapon = Globals::RampageData::current_mission.explosive_override;
+
+		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 20, TRUE, TRUE);
 	}
 
 	if (crd.heavy_enabled) {
-		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, eWeapon::WeaponMinigun, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, eWeapon::WeaponMinigun, 2000, TRUE, TRUE);
+		Hash weapon = eWeapon::WeaponMinigun;
+
+		if (Globals::RampageData::current_mission.heavy_override != 0)
+			weapon = Globals::RampageData::current_mission.heavy_override;
+
+		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 3000, TRUE, TRUE);
 	}
 
 	if (crd.pistol_enabled) {
-		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, eWeapon::WeaponPistol50, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, eWeapon::WeaponPistol50, 2500, TRUE, TRUE);
+		Hash weapon = eWeapon::WeaponPistol50;
+
+		if (Globals::RampageData::current_mission.pistol_override != 0)
+			weapon = Globals::RampageData::current_mission.pistol_override;
+
+		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 1000, TRUE, TRUE);
 	}
 
 	if (crd.rifle_enabled) {
-		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, eWeapon::WeaponAdvancedRifle, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, eWeapon::WeaponAdvancedRifle, 3000, TRUE, TRUE);
+		Hash weapon = eWeapon::WeaponAdvancedRifle;
+
+		if (Globals::RampageData::current_mission.rifle_override != 0)
+			weapon = Globals::RampageData::current_mission.rifle_override;
+
+		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 3000, TRUE, TRUE);
 	}
 
 	if (crd.shotgun_enabled) {
-		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, eWeapon::WeaponCombatShotgun, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, eWeapon::WeaponCombatShotgun, 1000, TRUE, TRUE);
+		Hash weapon = eWeapon::WeaponCombatShotgun;
+
+		if (Globals::RampageData::current_mission.shotgun_override != 0)
+			weapon = Globals::RampageData::current_mission.shotgun_override;
+
+		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 300, TRUE, TRUE);
 	}
 
 	if (crd.sniper_enabled) {
-		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, eWeapon::WeaponSniperRifle, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, eWeapon::WeaponSniperRifle, 200, TRUE, TRUE);
+		Hash weapon = eWeapon::WeaponSniperRifle;
+
+		if (Globals::RampageData::current_mission.sniper_override != 0)
+			weapon = Globals::RampageData::current_mission.sniper_override;
+
+		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 150, TRUE, TRUE);
 	}
 
 	if (crd.machinegun_enabled) {
-		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, eWeapon::WeaponMicroSMG, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, eWeapon::WeaponMicroSMG, 1500, TRUE, TRUE);
+		Hash weapon = eWeapon::WeaponMicroSMG;
+
+		if (Globals::RampageData::current_mission.machinegun_override != 0)
+			weapon = Globals::RampageData::current_mission.machinegun_override;
+
+		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 2000, TRUE, TRUE);
 	}
 
 	if (crd.melee_enabled) {
-		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, eWeapon::WeaponHammer, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, eWeapon::WeaponHammer, 1, TRUE, TRUE);
+		Hash weapon = eWeapon::WeaponHammer;
+
+		if (Globals::RampageData::current_mission.melee_override != 0)
+			weapon = Globals::RampageData::current_mission.melee_override;
+
+		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 1, TRUE, TRUE);
 	}
 
 	crd.start_time = MISC::GET_GAME_TIMER();
@@ -257,9 +326,12 @@ void Rampage::start_rampage() {
 
 	if (crd.headshot_only)
 		UI::show_subtitle(std::string("Headshot ").append(std::to_string(Globals::RampageData::current_mission.target)).append(" ~r~enemies.").c_str(), 30000);
+	else if (crd.vehicle_only)
+		UI::show_subtitle(std::string("Drive-By ").append(std::to_string(Globals::RampageData::current_mission.target)).append(" ~r~enemies.").c_str(), 30000);
 	else
 		UI::show_subtitle(std::string("Kill ").append(std::to_string(Globals::RampageData::current_mission.target)).append(" ~r~enemies.").c_str(), 30000);
 
+	vehicle_delay = crd.only_enemy_vehicles ? 6000 : 20000;
 	crd.last_p_spawn = MISC::GET_GAME_TIMER();
 	crd.last_v_spawn = MISC::GET_GAME_TIMER();
 }
@@ -281,31 +353,34 @@ void process_dead() {
 
 		Blip blip = HUD::GET_BLIP_FROM_ENTITY(ped);
 		HUD::REMOVE_BLIP(&blip);
-		Entity killer = PED::GET_PED_SOURCE_OF_DEATH(ped);
 
-		if (killer == ppid || killer == 0) {
-			bool headshot = killed_by_headshot(ped);
+		if (!crd.vehicle_only || (crd.vehicle_only && PED::IS_PED_IN_ANY_VEHICLE(ppid, FALSE))) {
+			Entity killer = PED::GET_PED_SOURCE_OF_DEATH(ped);
 
-			if (crd.headshot_only && headshot) {
-				crd.kills += 1;
-				crd.headshot_count += 1;
+			if (killer == ppid || killer == 0) {
+				bool headshot = killed_by_headshot(ped);
 
-				if (crd.kills == Globals::RampageData::current_mission.target)
-					AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_5_OS");
-				else
-					AUDIO::PLAY_SOUND_FRONTEND(-1, "RAMPAGE_KILLED_HEAD_SHOT_MASTER", 0, true);
-			}
-			else if (!crd.headshot_only) {
-				crd.kills += 1;
-
-				if (crd.kills == Globals::RampageData::current_mission.target)
-					AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_5_OS");
-				else if (headshot) {
-					AUDIO::PLAY_SOUND_FRONTEND(-1, "RAMPAGE_KILLED_HEAD_SHOT_MASTER", 0, true);
+				if (crd.headshot_only && headshot) {
+					crd.kills += 1;
 					crd.headshot_count += 1;
+
+					if (crd.kills == Globals::RampageData::current_mission.target)
+						AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_5_OS");
+					else
+						AUDIO::PLAY_SOUND_FRONTEND(-1, "RAMPAGE_KILLED_HEAD_SHOT_MASTER", 0, true);
 				}
-				else
-					AUDIO::PLAY_SOUND_FRONTEND(-1, "RAMPAGE_KILLED_COUNTER_MASTER", 0, true);
+				else if (!crd.headshot_only) {
+					crd.kills += 1;
+
+					if (crd.kills == Globals::RampageData::current_mission.target)
+						AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_5_OS");
+					else if (headshot) {
+						AUDIO::PLAY_SOUND_FRONTEND(-1, "RAMPAGE_KILLED_HEAD_SHOT_MASTER", 0, true);
+						crd.headshot_count += 1;
+					}
+					else
+						AUDIO::PLAY_SOUND_FRONTEND(-1, "RAMPAGE_KILLED_COUNTER_MASTER", 0, true);
+				}
 			}
 		}
 
@@ -444,53 +519,61 @@ bool Rampage::process_rampage() {
 		}
 
 		process_dead();
+		UI::show_subtitle("CHECK 1", 2000);
 
 		if (crd.enemy_peds.size() < 10) {
-			if (MISC::GET_GAME_TIMER() - crd.last_p_spawn > 1500) {
-				Vector3 player_coords = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), FALSE);
-				size_t index = Utils::ran_int(Globals::RampageData::current_mission.ped_spawnpoints.size() - 1, (size_t)0);
-				Vector3 coords = Globals::RampageData::current_mission.ped_spawnpoints.at(index);
+			UI::show_subtitle("CHECK 2", 2000);
+			if (!crd.only_enemy_vehicles) {
+				if (MISC::GET_GAME_TIMER() - crd.last_p_spawn > 1500) {
+					UI::show_subtitle("CHECK 3", 2000);
+					Vector3 player_coords = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), FALSE);
+					size_t index = Utils::ran_int(Globals::RampageData::current_mission.ped_spawnpoints.size() - 1, (size_t)0);
+					Vector3 coords = Globals::RampageData::current_mission.ped_spawnpoints.at(index);
 
-				while (Utils::is_in_range(player_coords, coords, 16.0f) && Globals::RampageData::current_mission.ped_spawnpoints.size() > 1)
-				{
-					index = Utils::ran_int(Globals::RampageData::current_mission.ped_spawnpoints.size() - 1, (size_t)0);
-					coords = Globals::RampageData::current_mission.ped_spawnpoints.at(index);
-				}
+					while (Utils::is_in_range(player_coords, coords, 16.0f) && Globals::RampageData::current_mission.ped_spawnpoints.size() > 1)
+					{
+						index = Utils::ran_int(Globals::RampageData::current_mission.ped_spawnpoints.size() - 1, (size_t)0);
+						coords = Globals::RampageData::current_mission.ped_spawnpoints.at(index);
+					}
 
-				index = Utils::ran_int(Globals::RampageData::current_mission.ped_models.size() - 1, (size_t)0);
-				Hash model = Globals::RampageData::current_mission.ped_models.at(index);
-				Ped enemy = PED::CREATE_PED(0, model, coords, 0.0f, FALSE, FALSE);
-				set_ped_config(enemy);
-				crd.enemy_peds.push_back(enemy);
-				crd.last_p_spawn = MISC::GET_GAME_TIMER();
-			}
-			else if (Globals::RampageData::current_mission.vehicle_spawnpoints.size() > 0 && MISC::GET_GAME_TIMER() - crd.last_v_spawn > 20000) {
-				Vector3 player_coords = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), FALSE);
-				size_t index = Utils::ran_int(Globals::RampageData::current_mission.vehicle_spawnpoints.size() - 1, (size_t)0);
-				Vector3 coords = Globals::RampageData::current_mission.vehicle_spawnpoints.at(index);
-
-				while (Utils::is_in_range(player_coords, coords, 16.0f) && Globals::RampageData::current_mission.vehicle_spawnpoints.size() > 1)
-				{
-					index = Utils::ran_int(Globals::RampageData::current_mission.vehicle_spawnpoints.size() - 1, (size_t)0);
-					coords = Globals::RampageData::current_mission.vehicle_spawnpoints.at(index);
-				}
-
-				index = Utils::ran_int(Globals::RampageData::current_mission.vehicle_models.size() - 1, (size_t)0);
-				Hash model = Globals::RampageData::current_mission.vehicle_models.at(index);
-				Vehicle vehicle = VEHICLE::CREATE_VEHICLE(model, coords, 0.0f, FALSE, FALSE, FALSE);
-				int seats = VEHICLE::GET_VEHICLE_MODEL_NUMBER_OF_SEATS(model);
-
-				for (int i = -1; i < seats; i++) {
 					index = Utils::ran_int(Globals::RampageData::current_mission.ped_models.size() - 1, (size_t)0);
-					Hash pmodel = Globals::RampageData::current_mission.ped_models.at(index);
-					Ped enemy = PED::CREATE_PED_INSIDE_VEHICLE(vehicle, 0, pmodel, i, FALSE, FALSE);
-					set_ped_config(enemy, i != -1);
+					Hash model = Globals::RampageData::current_mission.ped_models.at(index);
+					Ped enemy = PED::CREATE_PED(0, model, coords, 0.0f, FALSE, FALSE);
+					set_ped_config(enemy);
 					crd.enemy_peds.push_back(enemy);
+					crd.last_p_spawn = MISC::GET_GAME_TIMER();
 				}
+			}
+			
+			if (!crd.vehicle_only) {
+				if (Globals::RampageData::current_mission.vehicle_spawnpoints.size() > 0 && MISC::GET_GAME_TIMER() - crd.last_v_spawn > vehicle_delay) {
+					Vector3 player_coords = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), FALSE);
+					size_t index = Utils::ran_int(Globals::RampageData::current_mission.vehicle_spawnpoints.size() - 1, (size_t)0);
+					Vector3 coords = Globals::RampageData::current_mission.vehicle_spawnpoints.at(index);
 
-				UI::create_blip_for_enemy_vehicle(vehicle);
-				crd.enemy_vehicles.push_back(vehicle);
-				crd.last_v_spawn = MISC::GET_GAME_TIMER();
+					while (Utils::is_in_range(player_coords, coords, 16.0f) && Globals::RampageData::current_mission.vehicle_spawnpoints.size() > 1)
+					{
+						index = Utils::ran_int(Globals::RampageData::current_mission.vehicle_spawnpoints.size() - 1, (size_t)0);
+						coords = Globals::RampageData::current_mission.vehicle_spawnpoints.at(index);
+					}
+
+					index = Utils::ran_int(Globals::RampageData::current_mission.vehicle_models.size() - 1, (size_t)0);
+					Hash model = Globals::RampageData::current_mission.vehicle_models.at(index);
+					Vehicle vehicle = VEHICLE::CREATE_VEHICLE(model, coords, 0.0f, FALSE, FALSE, FALSE);
+					int seats = VEHICLE::GET_VEHICLE_MODEL_NUMBER_OF_SEATS(model);
+
+					for (int i = -1; i < seats; i++) {
+						index = Utils::ran_int(Globals::RampageData::current_mission.ped_models.size() - 1, (size_t)0);
+						Hash pmodel = Globals::RampageData::current_mission.ped_models.at(index);
+						Ped enemy = PED::CREATE_PED_INSIDE_VEHICLE(vehicle, 0, pmodel, i, FALSE, FALSE);
+						set_ped_config(enemy, i != -1);
+						crd.enemy_peds.push_back(enemy);
+					}
+
+					UI::create_blip_for_enemy_vehicle(vehicle);
+					crd.enemy_vehicles.push_back(vehicle);
+					crd.last_v_spawn = MISC::GET_GAME_TIMER();
+				}
 			}
 		}
 

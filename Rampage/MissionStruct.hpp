@@ -12,6 +12,14 @@ namespace Rampage {
 		typedef struct {
 			Hash mission_hash;
 			Hash relationship_group;
+			Hash melee_override;
+			Hash pistol_override;
+			Hash machinegun_override;
+			Hash shotgun_override;
+			Hash rifle_override;
+			Hash sniper_override;
+			Hash heavy_override;
+			Hash explosive_override;
 			Vector3 location;
 			std::string name;
 			int extra_objectives;
