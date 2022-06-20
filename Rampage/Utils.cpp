@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "Utils.hpp"
-#include "natives.h"
-#include "Globals.hpp"
 
 using namespace Rampage;
 

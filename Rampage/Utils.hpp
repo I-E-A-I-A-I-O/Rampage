@@ -1,5 +1,7 @@
 #pragma once
 
+#include "natives.h"
+#include "Globals.hpp"
 #include "MissionStruct.hpp"
 
 namespace Rampage {

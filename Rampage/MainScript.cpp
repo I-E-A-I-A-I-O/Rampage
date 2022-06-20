@@ -1,10 +1,5 @@
 #include "pch.h"
 #include "MainScript.hpp"
-#include "ScreenUtils.hpp"
-#include "Rampage.hpp"
-#include "nlohmann/json.hpp"
-#include "Utils.hpp"
-#include <fstream>
 
 using namespace Rampage;
 
@@ -134,12 +129,6 @@ void main() {
 		mission_blips.push_back(UI::create_blip(mission.location.x, mission.location.y, mission.location.z, eBlipSprite::BlipSpriteRampage, eBlipColor::BlipColorRed, mission.name.c_str()));
 
 	for (;;) {
-		if (PAD::IS_CONTROL_JUST_PRESSED(0, 52))
-			if (!Globals::UIFlags::scaleform_active) {
-				Globals::UIFlags::scaleform_type = ScaleformTypes::PassedWithObjectives;
-				Globals::UIFlags::scaleform_active = true;
-			}
-
 		if (!Globals::RampageData::rampage_active) {
 			Hash rampage_hash = Utils::is_player_in_start_range();
 
@@ -166,26 +155,13 @@ void main() {
 						}
 					}
 
+					start_rampage();
 					Globals::RampageData::rampage_active = true;
 				}
 			}
 		}
-		else {
-			if (PAD::IS_CONTROL_JUST_PRESSED(0, 51))
-			{
-				Globals::UIFlags::scaleform_type = ScaleformTypes::RampageStarted;
-
-				if (Globals::UIFlags::scaleform_active) {
-					Globals::UIFlags::clean = true;
-					Globals::UIFlags::scaleform_active = true;
-				}
-
-				GRAPHICS::ANIMPOSTFX_STOP("Rampage");
-				GRAPHICS::ANIMPOSTFX_PLAY("RampageOut", 0, FALSE);
-				AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_STOP");
-				Globals::RampageData::rampage_active = false;
-			}
-		}
+		else
+			process_rampage();
 
 		WAIT(0);
 	}
@@ -205,5 +181,5 @@ void Rampage::on_abort() {
 	mission_blips.clear();
 
 	if (Globals::RampageData::rampage_active)
-		Rampage::end_rampage();
+		end_rampage(false);
 }

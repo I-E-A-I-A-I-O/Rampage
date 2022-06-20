@@ -4,12 +4,13 @@ namespace Rampage {
 	enum class ScaleformTypes
 	{
 		PassedWithObjectives,
-		RampageStarted
+		RampageStarted,
+		RampageFailed
 	};
 
 	enum class ExtraObjectives {
 		NONE,
-		KILL_AMMOUNT = 1,
+		KILL_AMMOUNT,
 		HEADSHOT_AMMOUNT,
 		VEHICLE_AMMOUNT
 	};

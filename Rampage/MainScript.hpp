@@ -1,6 +1,11 @@
 #pragma once
 #include "natives.h"
 #include "Globals.hpp"
+#include "ScreenUtils.hpp"
+#include "Rampage.hpp"
+#include "nlohmann/json.hpp"
+#include "Utils.hpp"
+#include <fstream>
 #include <cstdlib>
 
 namespace Rampage {

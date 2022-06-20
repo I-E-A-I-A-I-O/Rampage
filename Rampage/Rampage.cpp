@@ -7,6 +7,8 @@ CurrentRampageData crd;
 
 void Rampage::start_rampage() {
 	crd = CurrentRampageData();
+	crd.enemy_peds = {};
+	crd.enemy_vehicles = {};
 	Ped ppid = PLAYER::PLAYER_PED_ID();
 	WEAPON::SET_CAN_PED_EQUIP_ALL_WEAPONS_(ppid, FALSE);
 
@@ -164,6 +166,35 @@ void Rampage::start_rampage() {
 		while (!STREAMING::HAS_MODEL_LOADED(model))
 			WAIT(0);
 	}
+
+	switch (Globals::RampageData::current_mission.extra_objectives) {
+	case 1:
+		crd.extra_kills = true;
+		break;
+	case 2:
+		crd.extra_headshots = true;
+		break;
+	case 3:
+		crd.extra_vehicles = true;
+		break;
+	case 1 << 2:
+		crd.extra_kills = true;
+		crd.extra_headshots = true;
+		break;
+	case 1 << 3:
+		crd.extra_kills = true;
+		crd.extra_vehicles = true;
+		break;
+	case 2 << 3:
+		crd.extra_headshots = true;
+		crd.extra_vehicles = true;
+		break;
+	}
+
+	if (crd.headshot_only)
+		UI::show_subtitle(std::string("Headshot ").append(std::to_string(Globals::RampageData::current_mission.target)).append(" ~r~enemies.").c_str(), 30000);
+	else
+		UI::show_subtitle(std::string("Kill ").append(std::to_string(Globals::RampageData::current_mission.target)).append(" ~r~enemies.").c_str(), 30000);
 }
 
 bool killed_by_headshot(Ped ped) {
@@ -216,6 +247,7 @@ void process_dead() {
 
 void Rampage::process_rampage() {
 	if (MISC::GET_GAME_TIMER() - crd.start_time < Globals::RampageData::current_mission.time) {
+		UI::show_subtitle(std::string("time: ").append(std::to_string(MISC::GET_GAME_TIMER() - crd.start_time)).c_str(), 1000);
 		process_dead();
 
 		if (crd.enemy_peds.size() < 10 && MISC::GET_GAME_TIMER() - crd.last_p_spawn > 1000) {
@@ -238,12 +270,66 @@ void Rampage::process_rampage() {
 			TASK::TASK_COMBAT_PED(enemy, PLAYER::PLAYER_PED_ID(), 0, 16);
 			UI::create_blip_for_enemy(enemy);
 			PED::SET_PED_COMBAT_MOVEMENT(enemy, 2);
+
+			if (crd.weak_enemies)
+			{
+				int max_health = ENTITY::GET_ENTITY_MAX_HEALTH(enemy);
+				ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.8f), 0);
+			}
+
 			crd.enemy_peds.push_back(enemy);
 			crd.last_p_spawn = MISC::GET_GAME_TIMER();
 		}
 	}
+	else
+		end_rampage(true);
 }
 
-void Rampage::end_rampage() {
+void Rampage::end_rampage(bool showScaleform) {
 	WEAPON::SET_CAN_PED_EQUIP_ALL_WEAPONS_(PLAYER::PLAYER_PED_ID(), TRUE);
+	GRAPHICS::ANIMPOSTFX_STOP("Rampage");
+	GRAPHICS::ANIMPOSTFX_PLAY("RampageOut", 0, FALSE);
+	AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_STOP");
+	Globals::RampageData::rampage_active = false;
+
+	if (!showScaleform)
+		return;
+
+	bool passed = crd.kills >= Globals::RampageData::current_mission.target;
+
+	if (!passed) {
+		Globals::UIFlags::scaleform_type = ScaleformTypes::RampageFailed;
+		Globals::UIFlags::scaleform_active = true;
+		return;
+	}
+
+	std::map<std::string, Globals::ScaleformObjective> extras = {};
+
+	if (crd.extra_kills) {
+		std::string title = std::string("Kill ").append(std::to_string(Globals::RampageData::current_mission.extra_target_1).append(" enemies").c_str());
+		Globals::ScaleformObjective objective = Globals::ScaleformObjective();
+		objective.value = crd.kills;
+		objective.passed = crd.kills >= Globals::RampageData::current_mission.extra_target_1;
+		extras.insert(std::make_pair(title, objective));
+	}
+
+	if (crd.extra_headshots) {
+		std::string title = std::string("Get ").append(std::to_string(Globals::RampageData::current_mission.extra_target_2).append(" headshots").c_str());
+		Globals::ScaleformObjective objective = Globals::ScaleformObjective();
+		objective.value = crd.headshot_count;
+		objective.passed = crd.headshot_count >= Globals::RampageData::current_mission.extra_target_2;
+		extras.insert(std::make_pair(title, objective));
+	}
+
+	if (crd.extra_vehicles) {
+		std::string title = std::string("Destroy ").append(std::to_string(Globals::RampageData::current_mission.extra_target_3).append(" vehicles").c_str());
+		Globals::ScaleformObjective objective = Globals::ScaleformObjective();
+		objective.value = crd.vehicle_kills;
+		objective.passed = crd.vehicle_kills >= Globals::RampageData::current_mission.extra_target_3;
+		extras.insert(std::make_pair(title, objective));
+	}
+
+	Globals::UIFlags::extraObjectives = extras;
+	Globals::UIFlags::scaleform_type = ScaleformTypes::PassedWithObjectives;
+	Globals::UIFlags::scaleform_active = true;
 }

@@ -1,10 +1,9 @@
 #pragma once
 
+#include "nlohmann/json.hpp"
+#include "types.h"
 #include <string>
 #include <vector>
-#include "nlohmann/json.hpp"
-#include "ScriptEnums.hpp"
-#include "types.h"
 
 using json = nlohmann::json;
 

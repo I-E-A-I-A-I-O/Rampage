@@ -31,11 +31,11 @@ namespace Rampage {
 		bool extra_kills;
 		bool extra_headshots;
 		bool extra_vehicles;
-		std::vector<Ped> enemy_peds = {};
-		std::vector<Vehicle> enemy_vehicles = {};
+		std::vector<Ped> enemy_peds;
+		std::vector<Vehicle> enemy_vehicles;
 	} CurrentRampageData;
 
 	void start_rampage();
 	void process_rampage();
-	void end_rampage();
+	void end_rampage(bool showScaleform);
 }
