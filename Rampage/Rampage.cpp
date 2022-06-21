@@ -590,6 +590,42 @@ bool Rampage::process_rampage() {
 	}
 }
 
+void reward_money(int times) {
+	int reward = 0;
+
+	Hash michaelModel = MISC::GET_HASH_KEY("PLAYER_ZERO");
+	Hash franklinModel = MISC::GET_HASH_KEY("PLAYER_ONE");
+	Hash trevorModel = MISC::GET_HASH_KEY("PLAYER_TWO");
+
+	Hash stat;
+	Ped playerPed = PLAYER::GET_PLAYER_PED(PLAYER::PLAYER_ID());
+	Hash pedModel = ENTITY::GET_ENTITY_MODEL(playerPed);
+
+	if (pedModel == michaelModel)
+	{
+		stat = MISC::GET_HASH_KEY("SP0_TOTAL_CASH");
+	}
+	else if (pedModel == franklinModel)
+	{
+		stat = MISC::GET_HASH_KEY("SP1_TOTAL_CASH");
+	}
+	else if (pedModel == trevorModel)
+	{
+		stat = MISC::GET_HASH_KEY("SP2_TOTAL_CASH");
+	}
+	else
+	{
+		return;
+	}
+
+
+	int playerMoney;
+	STATS::STAT_GET_INT(stat, &playerMoney, -1);
+	reward = 50000 + (50000 * Globals::RampageData::current_mission.multiplier * times);
+	STATS::STAT_SET_INT(stat, playerMoney + reward, 1);
+	UI::show_notification(std::string("~g~Rampage Reward: $").append(std::to_string(reward)).c_str());
+}
+
 void Rampage::end_rampage(bool show_scaleform) {
 	for (auto& ped : crd.enemy_peds) {
 		ENTITY::SET_PED_AS_NO_LONGER_NEEDED(&ped);
@@ -639,6 +675,7 @@ void Rampage::end_rampage(bool show_scaleform) {
 
 	AUDIO::PLAY_SOUND_FRONTEND(-1, "RAMPAGE_PASSED_MASTER", 0, true);
 	std::map<std::string, Globals::ScaleformObjective> extras = {};
+	int times = 0;
 
 	if (crd.extra_kills) {
 		std::string title = std::string("Kill ").append(std::to_string(Globals::RampageData::current_mission.extra_target_1).append(" enemies").c_str());
@@ -646,6 +683,7 @@ void Rampage::end_rampage(bool show_scaleform) {
 		objective.value = crd.kills;
 		objective.passed = crd.kills >= Globals::RampageData::current_mission.extra_target_1;
 		extras.insert(std::make_pair(title, objective));
+		++times;
 	}
 
 	if (crd.extra_headshots) {
@@ -654,6 +692,7 @@ void Rampage::end_rampage(bool show_scaleform) {
 		objective.value = crd.headshot_count;
 		objective.passed = crd.headshot_count >= Globals::RampageData::current_mission.extra_target_2;
 		extras.insert(std::make_pair(title, objective));
+		++times;
 	}
 
 	if (crd.extra_vehicles) {
@@ -662,8 +701,10 @@ void Rampage::end_rampage(bool show_scaleform) {
 		objective.value = crd.vehicle_kills;
 		objective.passed = crd.vehicle_kills >= Globals::RampageData::current_mission.extra_target_3;
 		extras.insert(std::make_pair(title, objective));
+		++times;
 	}
 
+	reward_money(times);
 	Globals::UIFlags::extraObjectives = extras;
 	Globals::UIFlags::scaleform_type = ScaleformTypes::PassedWithObjectives;
 	Globals::UIFlags::scaleform_active = true;
