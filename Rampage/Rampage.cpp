@@ -6,6 +6,7 @@ using namespace Rampage;
 CurrentRampageData crd;
 int checkpoint = 10000;
 int vehicle_delay = 20000;
+int foot_limit = 10;
 
 void Rampage::start_rampage() {
 	AUDIO::REQUEST_SCRIPT_AUDIO_BANK("SCRIPT\\RAMPAGE_01", FALSE, -1);
@@ -332,6 +333,7 @@ void Rampage::start_rampage() {
 		UI::show_subtitle(std::string("Kill ").append(std::to_string(Globals::RampageData::current_mission.target)).append(" ~r~enemies.").c_str(), 30000);
 
 	vehicle_delay = crd.only_enemy_vehicles ? 6000 : 20000;
+	foot_limit = crd.vehicle_only ? 20 : 10;
 	crd.last_p_spawn = MISC::GET_GAME_TIMER();
 	crd.last_v_spawn = MISC::GET_GAME_TIMER();
 }
@@ -440,7 +442,7 @@ void set_ped_config(Ped enemy) {
 	if (crd.weak_enemies)
 	{
 		int max_health = ENTITY::GET_ENTITY_MAX_HEALTH(enemy);
-		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.8f), 0);
+		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.4f), 0);
 	}
 }
 
@@ -488,7 +490,7 @@ void set_ped_config(Ped enemy, bool passenger) {
 	if (crd.weak_enemies)
 	{
 		int max_health = ENTITY::GET_ENTITY_MAX_HEALTH(enemy);
-		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.8f), 0);
+		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.4f), 0);
 	}
 }
 
@@ -519,13 +521,10 @@ bool Rampage::process_rampage() {
 		}
 
 		process_dead();
-		UI::show_subtitle("CHECK 1", 2000);
 
-		if (crd.enemy_peds.size() < 10) {
-			UI::show_subtitle("CHECK 2", 2000);
+		if (crd.enemy_peds.size() < foot_limit) {
 			if (!crd.only_enemy_vehicles) {
 				if (MISC::GET_GAME_TIMER() - crd.last_p_spawn > 1500) {
-					UI::show_subtitle("CHECK 3", 2000);
 					Vector3 player_coords = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), FALSE);
 					size_t index = Utils::ran_int(Globals::RampageData::current_mission.ped_spawnpoints.size() - 1, (size_t)0);
 					Vector3 coords = Globals::RampageData::current_mission.ped_spawnpoints.at(index);
