@@ -218,7 +218,7 @@ void main() {
 			Hash rampage_hash = Utils::is_player_in_start_range();
 
 			if (rampage_hash != 0) {
-				UI::show_help_text(std::string("Press ").append(controlsNames.at(Globals::ScriptConfig::start_rampage_key)).append(" to start the rampage.").c_str(), 0);
+				UI::show_help_text(std::string("Press ~").append(controlsNames.at(Globals::ScriptConfig::start_rampage_key)).append("~ to start the rampage.").c_str(), 0);
 
 				if (PAD::IS_CONTROL_JUST_PRESSED(0, Globals::ScriptConfig::start_rampage_key))
 				{
