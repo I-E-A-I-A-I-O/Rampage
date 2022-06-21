@@ -29,6 +29,15 @@ void delete_blips() {
 	}
 }
 
+void read_config_file() {
+	nlohmann::json j;
+	std::ifstream i("RampageData\\config.json");
+	i >> j;
+	i.close();
+	Globals::ScriptConfig::rampage_effect_disabled = j.at("disableRampageEffect");
+	Globals::ScriptConfig::start_rampage_key = j.at("startRampageKey");
+}
+
 void read_rampages_file() {
 	nlohmann::json j;
 	std::ifstream i("RampageData\\Rampage.json");
@@ -198,6 +207,7 @@ void read_rampages_file() {
 }
 
 void main() {
+	read_config_file();
 	read_rampages_file();
 	create_blips();
 
@@ -221,7 +231,10 @@ void main() {
 						Globals::UIFlags::scaleform_active = true;
 
 					TASK::TASK_PLAY_ANIM(PLAYER::PLAYER_PED_ID(), "missrampageintrooutro", "trvram_6_1h_intro", 8, -8, -1, 1, 0, 0, 0, 0);
-					GRAPHICS::ANIMPOSTFX_PLAY("Rampage", 0, TRUE);
+					
+					if (!Globals::ScriptConfig::rampage_effect_disabled)
+						GRAPHICS::ANIMPOSTFX_PLAY("Rampage", 0, TRUE);
+
 					AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_5_START");
 					AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_5_OS");
 

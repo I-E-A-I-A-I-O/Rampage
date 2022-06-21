@@ -217,7 +217,7 @@ void Rampage::start_rampage() {
 			weapon = Globals::RampageData::current_mission.heavy_override;
 
 		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 3000, TRUE, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 5000, TRUE, TRUE);
 	}
 
 	if (crd.pistol_enabled) {
@@ -605,8 +605,12 @@ void Rampage::end_rampage(bool show_scaleform) {
 	AUDIO::SET_AUDIO_FLAG("WantedMusicDisabled", FALSE);
 	AUDIO::SET_AUDIO_FLAG("DisableFlightMusic", FALSE);
 	WEAPON::SET_CAN_PED_EQUIP_ALL_WEAPONS_(PLAYER::PLAYER_PED_ID(), TRUE);
-	GRAPHICS::ANIMPOSTFX_STOP("Rampage");
-	GRAPHICS::ANIMPOSTFX_PLAY("RampageOut", 0, FALSE);
+
+	if (!Globals::ScriptConfig::rampage_effect_disabled) {
+		GRAPHICS::ANIMPOSTFX_STOP("Rampage");
+		GRAPHICS::ANIMPOSTFX_PLAY("RampageOut", 0, FALSE);
+	}
+	
 	AUDIO::TRIGGER_MUSIC_EVENT("RAMPAGE_STOP");
 	Globals::RampageData::rampage_active = false;
 

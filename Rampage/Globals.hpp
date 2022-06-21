@@ -11,6 +11,11 @@ namespace Rampage {
 			bool passed;
 		} ScaleformObjective;
 
+		struct ScriptConfig {
+			static bool rampage_effect_disabled;
+			static int start_rampage_key;
+		};
+
 		struct UIFlags {
 			static bool scaleform_active;
 			static bool clean;
