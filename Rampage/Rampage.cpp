@@ -42,6 +42,12 @@ void Rampage::start_rampage() {
 		crd.headshot_only = true;
 		break;
 	}
+	case 2 << 5:
+	{
+		crd.explosives_enabled = true;
+		crd.weak_enemies = true;
+		break;
+	}
 	case 3 << 4:
 	{
 		crd.headshot_only = true;
@@ -207,7 +213,7 @@ void Rampage::start_rampage() {
 			weapon = Globals::RampageData::current_mission.explosive_override;
 
 		WEAPON::SET_CAN_PED_EQUIP_WEAPON_(ppid, weapon, TRUE);
-		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 20, TRUE, TRUE);
+		WEAPON::GIVE_WEAPON_TO_PED(ppid, weapon, 25, TRUE, TRUE);
 	}
 
 	if (crd.heavy_enabled) {
@@ -442,7 +448,7 @@ void set_ped_config(Ped enemy) {
 	if (crd.weak_enemies)
 	{
 		int max_health = ENTITY::GET_ENTITY_MAX_HEALTH(enemy);
-		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.4f), 0);
+		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.35f), 0);
 	}
 }
 
@@ -490,7 +496,7 @@ void set_ped_config(Ped enemy, bool passenger) {
 	if (crd.weak_enemies)
 	{
 		int max_health = ENTITY::GET_ENTITY_MAX_HEALTH(enemy);
-		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.4f), 0);
+		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.35f), 0);
 	}
 }
 

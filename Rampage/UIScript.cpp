@@ -106,7 +106,7 @@ void process_passed_scaleform() {
 				GRAPHICS::BEGIN_SCALEFORM_MOVIE_METHOD(bm_scaleform_handle, "SET_SHARD_BACKGROUND_HEIGHT");
 				GRAPHICS::SCALEFORM_MOVIE_METHOD_ADD_PARAM_FLOAT(0.45f);
 				GRAPHICS::END_SCALEFORM_MOVIE_METHOD();
-				UI::set_scaleform_title_description(mc_scaleform_handle, "", "Objectives");
+				UI::set_scaleform_title_description(mc_scaleform_handle, "", "Extra Objectives");
 				set_objectives();
 				UI::complete_scaleform(mc_scaleform_handle);
 			}

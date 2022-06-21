@@ -5,6 +5,7 @@
 #include "Rampage.hpp"
 #include "nlohmann/json.hpp"
 #include "Utils.hpp"
+#include "ScriptEnums.hpp"
 #include <fstream>
 #include <cstdlib>
 
