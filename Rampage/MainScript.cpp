@@ -3,6 +3,8 @@
 
 using namespace Rampage;
 
+bool sound = true;
+
 void create_blips() {
 	for (auto& mission : Globals::mission_data)
 		mission.blip = UI::create_blip(mission.location.x, mission.location.y, mission.location.z, eBlipSprite::BlipSpriteRampage, eBlipColor::BlipColorRed, mission.name.c_str());
@@ -43,6 +45,7 @@ void read_rampages_file() {
 	std::ifstream i("RampageData\\Rampage.json");
 	i >> j;
 	i.close();
+	delete_blips();
 	Globals::mission_data = std::vector<Mission::MissionData>();
 
 	for (auto& item : j.items()) {
@@ -202,6 +205,18 @@ void read_rampages_file() {
 			mission.explosive_override = MISC::GET_HASH_KEY(weapon_name.c_str());
 		}
 
+		if (obj.find("vehicle_restriction") != obj.end()) {
+			int vehicle_restriction = obj.at("vehicle_restriction");
+			
+			if (vehicle_restriction != -1 && vehicle_restriction != 0 && vehicle_restriction != 1)
+				vehicle_restriction = -1;
+
+			mission.vehicle_restriction = vehicle_restriction;
+		}
+		else {
+			mission.vehicle_restriction = -1;
+		}
+
 		Globals::mission_data.push_back(mission);
 	}
 }
@@ -212,13 +227,23 @@ void main() {
 	create_blips();
 
 	for (;;) {
-		rampage_blip_watch();
-
 		if (!Globals::RampageData::rampage_active) {
+			if (MISC::HAS_CHEAT_STRING_JUST_BEEN_ENTERED_(MISC::GET_HASH_KEY("RAMPAGE_READ_DATA"))) {
+				read_rampages_file();
+			}
+
+			if (MISC::HAS_CHEAT_STRING_JUST_BEEN_ENTERED_(MISC::GET_HASH_KEY("RAMPAGE_READ_CONFIG"))) {
+				read_config_file();
+			}
+
+			rampage_blip_watch();
 			Hash rampage_hash = Utils::is_player_in_start_range();
 
 			if (rampage_hash != 0) {
-				UI::show_help_text(std::string("Press ~").append(controlsNames.at(Globals::ScriptConfig::start_rampage_key)).append("~ to start the rampage.").c_str(), 0);
+				UI::show_help_text(std::string("Press ~").append(controlsNames.at(Globals::ScriptConfig::start_rampage_key)).append("~ to start the rampage.").c_str(), sound);
+
+				if (sound)
+					sound = false;
 
 				if (PAD::IS_CONTROL_JUST_PRESSED(0, Globals::ScriptConfig::start_rampage_key))
 				{
@@ -231,7 +256,7 @@ void main() {
 						Globals::UIFlags::scaleform_active = true;
 
 					TASK::TASK_PLAY_ANIM(PLAYER::PLAYER_PED_ID(), "missrampageintrooutro", "trvram_6_1h_intro", 8, -8, -1, 1, 0, 0, 0, 0);
-					
+
 					if (!Globals::ScriptConfig::rampage_effect_disabled)
 						GRAPHICS::ANIMPOSTFX_PLAY("Rampage", 0, TRUE);
 
@@ -249,6 +274,8 @@ void main() {
 					Globals::RampageData::rampage_active = true;
 				}
 			}
+			else if (!sound)
+				sound = true;
 		}
 		else if (!process_rampage()) {
 			for (auto& mission : Globals::mission_data) {

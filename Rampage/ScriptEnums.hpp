@@ -11,6 +11,12 @@ namespace Rampage {
 		RampageFailed
 	};
 
+    enum class VehicleRestriction {
+        ANY = -1,
+        CAR,
+        BIKE
+    };
+
 	enum class ExtraObjectives {
 		NONE,
 		KILL_AMMOUNT,

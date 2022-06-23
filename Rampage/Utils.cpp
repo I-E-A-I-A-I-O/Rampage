@@ -3,8 +3,6 @@
 
 using namespace Rampage;
 
-
-
 std::string Utils::format_duration(std::chrono::milliseconds ms) {
 	using namespace std::chrono;
 	auto secs = duration_cast<seconds>(ms);
@@ -44,8 +42,31 @@ bool is_busy() {
 }
 
 bool start_in_vehicle(const Mission::MissionData& mission) {
-	if (mission.mission_flags == 13 || mission.mission_flags == 8 << 13)
-		return PED::IS_PED_IN_ANY_VEHICLE(PLAYER::PLAYER_PED_ID(), 0);
+	if (mission.mission_flags == 13 || mission.mission_flags == 8 << 13 || mission.mission_flags == 10 << 13 <<14)
+	{
+		int vehicle = PED::GET_VEHICLE_PED_IS_IN(PLAYER::PLAYER_PED_ID(), FALSE);
+
+		if (vehicle == 0)
+			return false;
+
+		switch (mission.vehicle_restriction)
+		{
+		case 0:
+		{
+			Hash model = ENTITY::GET_ENTITY_MODEL(vehicle);
+			return VEHICLE::IS_THIS_MODEL_A_CAR(model);
+			break;
+		}
+		case 1: 
+		{
+			Hash model = ENTITY::GET_ENTITY_MODEL(vehicle);
+			return VEHICLE::IS_THIS_MODEL_A_BIKE(model);
+			break;
+		}
+		default:
+			return true;
+		}
+	}
 	else
 		return !PED::IS_PED_IN_ANY_VEHICLE(PLAYER::PLAYER_PED_ID(), 0);
 }
