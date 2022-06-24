@@ -14,3 +14,4 @@ bool Globals::RampageData::rampage_active;
 Mission::MissionData Globals::RampageData::current_mission;
 bool Globals::ScriptConfig::rampage_effect_disabled;
 int Globals::ScriptConfig::start_rampage_key;
+int Globals::ScriptConfig::detonate_key;

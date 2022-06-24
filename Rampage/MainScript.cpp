@@ -38,6 +38,7 @@ void read_config_file() {
 	i.close();
 	Globals::ScriptConfig::rampage_effect_disabled = j.at("disableRampageEffect");
 	Globals::ScriptConfig::start_rampage_key = j.at("startRampageKey");
+	Globals::ScriptConfig::detonate_key = j.at("detonateRcKey");
 }
 
 void read_rampages_file() {

@@ -4,6 +4,7 @@
 using namespace Rampage;
 
 CurrentRampageData crd;
+BanditoData bd;
 int checkpoint = 10000;
 int vehicle_delay = 20000;
 int foot_limit = 10;
@@ -17,6 +18,7 @@ void Rampage::start_rampage() {
 	AUDIO::SET_AUDIO_FLAG("DisableFlightMusic", TRUE);
 	Globals::UIFlags::kill_count = 0;
 	Globals::UIFlags::time_left = 0;
+	bd = BanditoData();
 	weapon_hashes = {};
 	checkpoint = 10000;
 	crd = CurrentRampageData();
@@ -224,12 +226,33 @@ void Rampage::start_rampage() {
 		crd.pistol_enabled = true;
 		break;
 	}
+	case 12:
+	{
+		crd.rc_only = true;
+		break;
+	}
 	default: 
 	{
 		crd.shotgun_enabled = true;
 		crd.explosives_enabled = true;
 		break;
 	}
+	}
+
+	if (crd.rc_only) {
+		Hash banditoHash = MISC::GET_HASH_KEY("rcbandito");
+		STREAMING::REQUEST_MODEL(banditoHash);
+
+		while (!STREAMING::HAS_MODEL_LOADED(banditoHash))
+			WAIT(0);
+
+		bd.player_clone = PED::CLONE_PED(PLAYER::PLAYER_PED_ID(), FALSE, FALSE, TRUE);
+		PED::SET_PED_ARMOUR(bd.player_clone, 100);
+		PED::SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(bd.player_clone, TRUE);
+		TASK::TASK_START_SCENARIO_IN_PLACE(bd.player_clone, "WORLD_HUMAN_STAND_MOBILE", 0, TRUE);
+		bd.rc_bandito = VEHICLE::CREATE_VEHICLE(banditoHash, Globals::RampageData::current_mission.location, 0.0f, FALSE, FALSE, FALSE);
+		PED::SET_PED_INTO_VEHICLE(PLAYER::PLAYER_PED_ID(), bd.rc_bandito, eVehicleSeat::VehicleSeatDriver);
+		ENTITY::SET_ENTITY_INVINCIBLE(bd.rc_bandito, TRUE);
 	}
 
 	if (crd.explosives_enabled) {
@@ -475,6 +498,7 @@ void process_dead() {
 }
 
 void set_ped_config(Ped enemy) {
+	Ped target = crd.rc_only ? bd.player_clone : PLAYER::PLAYER_PED_ID();
 	PED::SET_PED_RELATIONSHIP_GROUP_HASH(enemy, Globals::RampageData::current_mission.relationship_group);
 	PED::SET_PED_ARMOUR(enemy, 0);
 	PED::SET_PED_ACCURACY(enemy, 5);
@@ -489,33 +513,34 @@ void set_ped_config(Ped enemy) {
 		else
 			WEAPON::GIVE_LOADOUT_TO_PED_(enemy, MISC::GET_HASH_KEY("LOADOUT_COP_SHOTGUN"));
 
-		TASK::TASK_COMBAT_PED(enemy, PLAYER::PLAYER_PED_ID(), 0, 16);
+		TASK::TASK_COMBAT_PED(enemy, target, 0, 16);
 	}
 	else {
 		if (ran_loadout <= 50)
 		{
 			WEAPON::GIVE_WEAPON_TO_PED(enemy, eWeapon::WeaponBat, 1, TRUE, TRUE);
-			TASK::TASK_PUT_PED_DIRECTLY_INTO_MELEE(enemy, PLAYER::PLAYER_PED_ID(), 0, -1, 0, 0);
+			TASK::TASK_PUT_PED_DIRECTLY_INTO_MELEE(enemy, target, 0, -1, 0, 0);
 		}
 		else if (ran_loadout <= 75)
 		{
 			WEAPON::GIVE_WEAPON_TO_PED(enemy, eWeapon::WeaponKnife, 1, TRUE, TRUE);
-			TASK::TASK_PUT_PED_DIRECTLY_INTO_MELEE(enemy, PLAYER::PLAYER_PED_ID(), 0, -1, 0, 0);
+			TASK::TASK_PUT_PED_DIRECTLY_INTO_MELEE(enemy, target, 0, -1, 0, 0);
 		}
 		else {
 			WEAPON::GIVE_WEAPON_TO_PED(enemy, eWeapon::WeaponPistol, 200, TRUE, TRUE);
-			TASK::TASK_COMBAT_PED(enemy, PLAYER::PLAYER_PED_ID(), 0, 16);
+			TASK::TASK_COMBAT_PED(enemy, target, 0, 16);
 		}
 	}
 
 	if (crd.weak_enemies)
 	{
 		int max_health = ENTITY::GET_ENTITY_MAX_HEALTH(enemy);
-		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.35f), 0);
+		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.4f), 0);
 	}
 }
 
 void set_ped_config(Ped enemy, bool passenger) {
+	Ped target = crd.rc_only ? bd.player_clone : PLAYER::PLAYER_PED_ID();
 	PED::SET_PED_RELATIONSHIP_GROUP_HASH(enemy, Globals::RampageData::current_mission.relationship_group);
 	PED::SET_PED_ARMOUR(enemy, 0);
 	PED::SET_PED_ACCURACY(enemy, 5);
@@ -531,43 +556,90 @@ void set_ped_config(Ped enemy, bool passenger) {
 			WEAPON::GIVE_LOADOUT_TO_PED_(enemy, MISC::GET_HASH_KEY("LOADOUT_COP_SHOTGUN"));
 
 		if (passenger)
-			TASK::TASK_VEHICLE_SHOOT_AT_PED(enemy, PLAYER::PLAYER_PED_ID(), 40.0f);
+			TASK::TASK_VEHICLE_SHOOT_AT_PED(enemy, target, 40.0f);
 		else
-			TASK::TASK_COMBAT_PED(enemy, PLAYER::PLAYER_PED_ID(), 0, 16);
+			TASK::TASK_COMBAT_PED(enemy, target, 0, 16);
 	}
 	else {
 		if (ran_loadout <= 50)
 		{
 			WEAPON::GIVE_WEAPON_TO_PED(enemy, eWeapon::WeaponBat, 1, TRUE, TRUE);
-			TASK::TASK_PUT_PED_DIRECTLY_INTO_MELEE(enemy, PLAYER::PLAYER_PED_ID(), 0, -1, 0, 0);
+			TASK::TASK_PUT_PED_DIRECTLY_INTO_MELEE(enemy, target, 0, -1, 0, 0);
 		}
 		else if (ran_loadout <= 75)
 		{
 			WEAPON::GIVE_WEAPON_TO_PED(enemy, eWeapon::WeaponKnife, 1, TRUE, TRUE);
-			TASK::TASK_PUT_PED_DIRECTLY_INTO_MELEE(enemy, PLAYER::PLAYER_PED_ID(), 0, -1, 0, 0);
+			TASK::TASK_PUT_PED_DIRECTLY_INTO_MELEE(enemy, target, 0, -1, 0, 0);
 		}
 		else {
 			WEAPON::GIVE_WEAPON_TO_PED(enemy, eWeapon::WeaponPistol, 200, TRUE, TRUE);
 
 			if (passenger)
-				TASK::TASK_VEHICLE_SHOOT_AT_PED(enemy, PLAYER::PLAYER_PED_ID(), 40.0f);
+				TASK::TASK_VEHICLE_SHOOT_AT_PED(enemy, target, 40.0f);
 			else
-				TASK::TASK_COMBAT_PED(enemy, PLAYER::PLAYER_PED_ID(), 0, 16);
+				TASK::TASK_COMBAT_PED(enemy, target, 0, 16);
 		}
 	}
 
 	if (crd.weak_enemies)
 	{
 		int max_health = ENTITY::GET_ENTITY_MAX_HEALTH(enemy);
-		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.35f), 0);
+		ENTITY::SET_ENTITY_HEALTH(enemy, max_health - (max_health * 0.4f), 0);
 	}
+}
+
+void bandito_tp() {
+	if (bd.phase == 1 && MISC::GET_GAME_TIMER() - bd.start_time > 1000) {
+		ENTITY::SET_ENTITY_COORDS(bd.rc_bandito, Globals::RampageData::current_mission.location, TRUE, FALSE, FALSE, TRUE);
+		CAM::DO_SCREEN_FADE_IN(1000);
+		bd.phase = 2;
+		bd.start_time = MISC::GET_GAME_TIMER();
+	}
+
+	if (bd.phase == 2 && MISC::GET_GAME_TIMER() - bd.start_time > 1000) {
+		ENTITY::FREEZE_ENTITY_POSITION(bd.rc_bandito, FALSE);
+		bd.phase = 0;
+		bd.exploded = false;
+	}
+}
+
+void detonate_rc() {
+	FIRE::ADD_EXPLOSION(ENTITY::GET_ENTITY_COORDS(bd.rc_bandito, TRUE), eExplosionType::ExplosionTypeStickyBomb, 1.0f, TRUE, FALSE, 1.0f, FALSE);
+	ENTITY::FREEZE_ENTITY_POSITION(bd.rc_bandito, TRUE);
+	CAM::DO_SCREEN_FADE_OUT(1000);
+	bd.phase = 1;
+	bd.exploded = true;
+	bd.start_time = MISC::GET_GAME_TIMER();
 }
 
 bool Rampage::process_rampage() {
 	if (MISC::GET_GAME_TIMER() - crd.start_time < Globals::RampageData::current_mission.time) {
+		if (crd.rc_only) {
+			if (ENTITY::IS_ENTITY_DEAD(bd.player_clone, TRUE)) {
+				ENTITY::SET_ENTITY_HEALTH(PLAYER::PLAYER_PED_ID(), 0, 0);
+				WAIT(0);
+			}
+		}
+
 		if (PLAYER::IS_PLAYER_DEAD(0)) {
 			end_rampage(false);
 			return false;
+		}
+
+		if (crd.rc_only) {
+			UI::show_help_text(std::string("Press ~").append(controlsNames.at(Globals::ScriptConfig::detonate_key)).append("~ to detonate.").c_str(), false);
+			PAD::DISABLE_CONTROL_ACTION(2, 68, TRUE);
+			PAD::DISABLE_CONTROL_ACTION(2, 75, TRUE);
+			PAD::DISABLE_CONTROL_ACTION(2, 85, TRUE);
+
+			if (!bd.exploded) {
+				if (PAD::IS_CONTROL_JUST_PRESSED(2, Globals::ScriptConfig::detonate_key)) {
+					detonate_rc();
+				}
+			}
+			else {
+				bandito_tp();
+			}
 		}
 
 		if (crd.ability_disabled) {
@@ -708,6 +780,23 @@ void Rampage::end_rampage(bool show_scaleform) {
 
 	for (Hash& wHash : weapon_hashes) {
 		WEAPON::SET_PED_INFINITE_AMMO(ppid, FALSE, wHash);
+	}
+
+	if (crd.rc_only) {
+		if (!show_scaleform)
+			ENTITY::SET_PED_AS_NO_LONGER_NEEDED(&bd.player_clone);
+		else
+		{
+			CAM::DO_SCREEN_FADE_OUT(1000);
+			WAIT(2000);
+			ENTITY::DELETE_ENTITY(&bd.player_clone);
+			TASK::TASK_EVERYONE_LEAVE_VEHICLE(bd.rc_bandito);
+			ENTITY::SET_ENTITY_COORDS(ppid, Globals::RampageData::current_mission.location, TRUE, FALSE, FALSE, TRUE);
+			CAM::DO_SCREEN_FADE_IN(1000);
+			WAIT(2000);
+		}
+
+		ENTITY::SET_VEHICLE_AS_NO_LONGER_NEEDED(&bd.rc_bandito);
 	}
 
 	PLAYER::SET_DISPATCH_COPS_FOR_PLAYER(PLAYER::PLAYER_ID(), TRUE);

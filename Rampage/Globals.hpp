@@ -14,6 +14,7 @@ namespace Rampage {
 		struct ScriptConfig {
 			static bool rampage_effect_disabled;
 			static int start_rampage_key;
+			static int detonate_key;
 		};
 
 		struct UIFlags {

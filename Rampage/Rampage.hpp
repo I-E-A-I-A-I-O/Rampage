@@ -36,6 +36,14 @@ namespace Rampage {
 		std::vector<Vehicle> enemy_vehicles;
 	} CurrentRampageData;
 
+	typedef struct {
+		Ped player_clone;
+		Vehicle rc_bandito;
+		bool exploded;
+		int phase;
+		int start_time;
+	} BanditoData;
+
 	void start_rampage();
 	bool process_rampage();
 	void end_rampage(bool show_scaleform);
