@@ -16,4 +16,4 @@ Go to a rampage location and press E or DPad Right (*editable in the config.json
 ## Credits
 - [Idea](https://forums.gta5-mods.com/topic/38420/3d-era-rampages "Idea") by [-EcLiPsE-](https://www.gta5-mods.com/users/-EcLiPsE- "-EcLiPsE-")
 - Script by me
-- ScriptHookV SDK by Alexander Blande
+- ScriptHookV SDK by Alexander Blade
