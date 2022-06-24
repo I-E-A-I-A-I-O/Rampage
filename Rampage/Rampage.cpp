@@ -245,7 +245,9 @@ void Rampage::start_rampage() {
 
 		while (!STREAMING::HAS_MODEL_LOADED(banditoHash))
 			WAIT(0);
-
+		
+		CAM::DO_SCREEN_FADE_OUT(1000);
+		WAIT(1500);
 		bd.player_clone = PED::CLONE_PED(PLAYER::PLAYER_PED_ID(), FALSE, FALSE, TRUE);
 		PED::SET_PED_ARMOUR(bd.player_clone, 100);
 		PED::SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(bd.player_clone, TRUE);
@@ -253,6 +255,8 @@ void Rampage::start_rampage() {
 		bd.rc_bandito = VEHICLE::CREATE_VEHICLE(banditoHash, Globals::RampageData::current_mission.location, 0.0f, FALSE, FALSE, FALSE);
 		PED::SET_PED_INTO_VEHICLE(PLAYER::PLAYER_PED_ID(), bd.rc_bandito, eVehicleSeat::VehicleSeatDriver);
 		ENTITY::SET_ENTITY_INVINCIBLE(bd.rc_bandito, TRUE);
+		CAM::DO_SCREEN_FADE_IN(1000);
+		WAIT(1000);
 	}
 
 	if (crd.explosives_enabled) {
@@ -788,12 +792,12 @@ void Rampage::end_rampage(bool show_scaleform) {
 		else
 		{
 			CAM::DO_SCREEN_FADE_OUT(1000);
-			WAIT(2000);
+			WAIT(1500);
 			ENTITY::DELETE_ENTITY(&bd.player_clone);
 			TASK::TASK_EVERYONE_LEAVE_VEHICLE(bd.rc_bandito);
 			ENTITY::SET_ENTITY_COORDS(ppid, Globals::RampageData::current_mission.location, TRUE, FALSE, FALSE, TRUE);
 			CAM::DO_SCREEN_FADE_IN(1000);
-			WAIT(2000);
+			WAIT(1000);
 		}
 
 		ENTITY::SET_VEHICLE_AS_NO_LONGER_NEEDED(&bd.rc_bandito);

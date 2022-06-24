@@ -6,8 +6,9 @@ using namespace Rampage;
 bool sound = true;
 
 void create_blips() {
-	for (auto& mission : Globals::mission_data)
-		mission.blip = UI::create_blip(mission.location.x, mission.location.y, mission.location.z, eBlipSprite::BlipSpriteRampage, eBlipColor::BlipColorRed, mission.name.c_str());
+	for (auto& mission : Globals::mission_data) {
+		mission.blip = UI::create_blip(mission.location.x, mission.location.y, mission.location.z, mission.mission_flags == 12 ? eBlipSprite::BlipSpriteRcBandito : eBlipSprite::BlipSpriteRampage, eBlipColor::BlipColorOrange, "Rampage");
+	}
 }
 
 void rampage_blip_watch() {
@@ -16,7 +17,7 @@ void rampage_blip_watch() {
 			continue;
 
 		if (mission.blip == 0 && MISC::GET_GAME_TIMER() - mission.last_played > 300000) {
-			mission.blip = UI::create_blip(mission.location.x, mission.location.y, mission.location.z, eBlipSprite::BlipSpriteRampage, eBlipColor::BlipColorRed, mission.name.c_str());
+			mission.blip = UI::create_blip(mission.location.x, mission.location.y, mission.location.z, mission.mission_flags == 12 ? eBlipSprite::BlipSpriteRcBandito : eBlipSprite::BlipSpriteRampage, eBlipColor::BlipColorOrange, "Rampage");
 		}
 	}
 }
